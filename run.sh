@@ -28,14 +28,32 @@ DOMAIN=`echo ${SERVER_HOSTNAME} | awk 'BEGIN{FS=OFS="."}{print $(NF-1),$NF}'`
 
 # Set needed config options
 add_config_value "maillog_file" "/dev/stdout"
+if [ ! -z "${MESSAGE_SIZE_LIMIT}" ]; then
+    add_config_value "message_size_limit" "${MESSAGE_SIZE_LIMIT}"
+fi
+if [ ! -z "${MAILBOX_SIZE_LIMIT}" ]; then
+    add_config_value "mailbox_size_limit" "${MAILBOX_SIZE_LIMIT}"
+fi
+if [ ! -z "${ALIAS_MAPS}" ]; then
+    add_config_value "alias_maps" "${ALIAS_MAPS}"
+fi
+if [ ! -z "${ALIAS_DATABASE}" ]; then
+    add_config_value "alias_database" "${ALIAS_DATABASE}"
+fi
 add_config_value "myhostname" ${SERVER_HOSTNAME}
 add_config_value "mydomain" ${DOMAIN}
 add_config_value "mydestination" "${DESTINATION:-localhost}"
 add_config_value "myorigin" '$mydomain'
 add_config_value "relayhost" "[${SMTP_SERVER}]:${SMTP_PORT}"
-add_config_value "smtp_use_tls" "yes"
+add_config_value "smtp_tls_security_level" "${SMTP_TLS_SECURITY_LEVEL}"
+if [ ! -z "${SMTP_TLS_MANDATORY_CIPHERS}" ]; then
+    add_config_value "smtp_tls_mandatory_ciphers" "${SMTP_TLS_MANDATORY_CIPHERS}"
+fi
+if [ ! -z "${SMTP_TLS_MANDATORY_PROTOCOLS}" ]; then
+    add_config_value "smtp_tls_mandatory_protocols" "${SMTP_TLS_MANDATORY_PROTOCOLS}"
+fi
 if [ ! -z "${SMTP_USERNAME}" ]; then
-  add_config_value "smtp_sasl_auth_enable" "yes"
+  add_config_value "smtp_sasl_auth_enable" "yes"0
   add_config_value "smtp_sasl_password_maps" "lmdb:/etc/postfix/sasl_passwd"
   add_config_value "smtp_sasl_security_options" "noanonymous"
 fi
@@ -67,11 +85,15 @@ if [ ! -z "${SMTP_HEADER_TAG}" ]; then
 fi
 
 #Check for subnet restrictions
-nets='10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'
+nets=''
 if [ ! -z "${SMTP_NETWORKS}" ]; then
         for i in $(sed 's/,/\ /g' <<<$SMTP_NETWORKS); do
                 if grep -Eq "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/[0-9]{1,2}" <<<$i ; then
-                        nets+=", $i"
+                        if [ -z "${nets}" ]; then
+                            nets="$i"
+                        else
+                            nets+=", $i"
+                        fi
                 else
                         echo "$i is not in proper IPv4 subnet format. Ignoring."
                 fi
@@ -85,6 +107,12 @@ if [ ! -z "${OVERWRITE_FROM}" ]; then
   postconf -e 'smtp_header_checks = regexp:/etc/postfix/smtp_header_checks'
   echo "Setting configuration option OVERWRITE_FROM with value: ${OVERWRITE_FROM}"
 fi
+
+add_config_value "debugger_command" "PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin && ddd $daemon_directory/$process_name $process_id & sleep 5"
+add_config_value "sendmail_path" "/usr/sbin/sendmail.postfix"
+add_config_value "newaliases_path" "/usr/bin/newaliases.postfix"
+add_config_value "mailq_path" "/usr/bin/mailq.postfix"
+add_config_value "html_directory" "no"
 
 #Start services
 

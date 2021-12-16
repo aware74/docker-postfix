@@ -1,7 +1,7 @@
 # docker-postfix
-[![Docker Build Status](https://img.shields.io/docker/cloud/build/juanluisbaptiste/postfix?style=flat-square)](https://hub.docker.com/r/juanluisbaptiste/postfix/builds/)
-[![Docker Stars](https://img.shields.io/docker/stars/juanluisbaptiste/postfix.svg?style=flat-square)](https://hub.docker.com/r/juanluisbaptiste/postfix/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/juanluisbaptiste/postfix.svg?style=flat-square)](https://hub.docker.com/r/juanluisbaptiste/postfix/)
+[![Docker Build Status](https://img.shields.io/docker/cloud/build/aware74/postfix?style=flat-square)](https://hub.docker.com/r/aware74/postfix/builds/)
+[![Docker Stars](https://img.shields.io/docker/stars/aware74/postfix.svg?style=flat-square)](https://hub.docker.com/r/aware74/postfix/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/aware74/postfix.svg?style=flat-square)](https://hub.docker.com/r/aware74/postfix/)
 
 Simple Postfix SMTP TLS relay [docker](http://www.docker.com) alpine based image with no local authentication enabled (to be run in a secure LAN).
 
@@ -37,15 +37,15 @@ Additionally the amd64 architecture has the following tags:
 Clone this repo and then:
 
     cd docker-Postfix
-    sudo docker build -t juanluisbaptiste/postfix .
+    sudo docker build -t aware74/postfix .
 
-Or you can use the provided [docker-compose](https://github.com/juanluisbaptiste/docker-postfix/blob/master/docker-compose.override.yml) files:
+Or you can use the provided [docker-compose](https://github.com/aware74/docker-postfix/blob/master/docker-compose.override.yml) files:
 
     sudo docker-compose build
 
-For more information on using multiple compose files [see here](https://docs.docker.com/compose/production/). You can also find a prebuilt docker image from [Docker Hub](https://registry.hub.docker.com/u/juanluisbaptiste/postfix/), which can be pulled with this command:
+For more information on using multiple compose files [see here](https://docs.docker.com/compose/production/). You can also find a prebuilt docker image from [Docker Hub](https://registry.hub.docker.com/u/aware74/postfix/), which can be pulled with this command:
 
-    sudo docker pull juanluisbaptiste/postfix:latest
+    sudo docker pull aware74/postfix:latest
 
 ### How to run it
 
@@ -86,7 +86,7 @@ To use this container from anywhere, the 25 port or the one specified by `SMTP_P
            -e SMTP_USERNAME=foo@bar.com \
            -e SMTP_PASSWORD=XXXXXXXX \
            -e SERVER_HOSTNAME=helpdesk.mycompany.com \
-           juanluisbaptiste/postfix
+           aware74/postfix
 
 If you are going to use this container from other docker containers then it's better to just publish the port:
 
@@ -95,9 +95,9 @@ If you are going to use this container from other docker containers then it's be
            -e SMTP_USERNAME=foo@bar.com \
            -e SMTP_PASSWORD=XXXXXXXX \
            -e SERVER_HOSTNAME=helpdesk.mycompany.com \           
-           juanluisbaptiste/postfix
+           aware74/postfix
 
-Or if you can start the service using the provided [docker-compose](https://github.com/juanluisbaptiste/docker-postfix/blob/master/docker-compose.yml) file for production use:
+Or if you can start the service using the provided [docker-compose](https://github.com/aware74/docker-postfix/blob/master/docker-compose.yml) file for production use:
 
     sudo docker-compose up -d
 

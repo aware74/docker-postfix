@@ -1,7 +1,7 @@
 version: '2'
 services:
   postfix:
-    image: juanluisbaptiste/postfix:latest
+    image: aware74/postfix:latest
     expose:
     - "25"
     env_file:

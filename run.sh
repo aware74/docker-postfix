@@ -113,6 +113,7 @@ add_config_value "sendmail_path" "/usr/sbin/sendmail.postfix"
 add_config_value "newaliases_path" "/usr/bin/newaliases.postfix"
 add_config_value "mailq_path" "/usr/bin/mailq.postfix"
 add_config_value "html_directory" "no"
+add_config_value "smtpd_tls_CAfile" "/etc/ssl/cert.pem"
 
 #Start services
 

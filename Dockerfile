@@ -3,7 +3,7 @@ FROM alpine:3.15
 
 RUN apk update && \
     apk add bash gawk cyrus-sasl cyrus-sasl-login cyrus-sasl-crammd5 mailx \
-    postfix && \
+    postfix ca-certificates && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /var/log/supervisor/ /var/run/supervisor/ && \
     sed -i -e 's/inet_interfaces = localhost/inet_interfaces = all/g' /etc/postfix/main.cf

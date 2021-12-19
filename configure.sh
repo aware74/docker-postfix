@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
+
+. .env
 
 [ "${DEBUG}" == "yes" ] && set -x
 
@@ -11,6 +13,18 @@ function add_config_value() {
 
   echo "Setting configuration option ${key} with value: ${value}"
  postconf -e "${key} = ${value}"
+}
+
+function configure_trust_anchor {
+    local download_url="$1"
+    local postfix_certs_dir="/etc/postfix/certs"
+    local ca_certs_file="${postfix_certs_dir}/ca_certs.pem"
+
+    mkdir -p ${postfix_certs_dir}
+
+    curl ${download_url} --output ${ca_certs_file}
+
+    add_config_value "smtp_tls_trust_anchor_file" "${ca_certs_file}"
 }
 
 # Read password and username from file to avoid unsecure env variables
@@ -51,6 +65,9 @@ if [ ! -z "${SMTP_TLS_MANDATORY_CIPHERS}" ]; then
 fi
 if [ ! -z "${SMTP_TLS_MANDATORY_PROTOCOLS}" ]; then
     add_config_value "smtp_tls_mandatory_protocols" "${SMTP_TLS_MANDATORY_PROTOCOLS}"
+fi
+if [ ! -z "${SMTP_TLS_LOGLEVEL}" ]; then
+    add_config_value "smtp_tls_loglevel" "${SMTP_TLS_LOGLEVEL}"
 fi
 if [ ! -z "${SMTP_USERNAME}" ]; then
   add_config_value "smtp_sasl_auth_enable" "yes"0
@@ -113,12 +130,7 @@ add_config_value "sendmail_path" "/usr/sbin/sendmail.postfix"
 add_config_value "newaliases_path" "/usr/bin/newaliases.postfix"
 add_config_value "mailq_path" "/usr/bin/mailq.postfix"
 add_config_value "html_directory" "no"
-add_config_value "smtpd_tls_CAfile" "/etc/ssl/cert.pem"
 
-#Start services
-
-# If host mounting /var/spool/postfix, we need to delete old pid file before
-# starting services
-rm -f /var/spool/postfix/pid/master.pid
-
-exec /usr/sbin/postfix -c /etc/postfix start-fg
+if [ ! -z "${SMTP_TLS_TRUST_ANCHOR_DOWNLOAD_URL}" ]; then
+    configure_trust_anchor "${SMTP_TLS_TRUST_ANCHOR_DOWNLOAD_URL}"
+fi
